@@ -1,41 +1,42 @@
 package com.example.application2;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
-
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.location.SettingInjectorService;
-import android.net.Uri;
+import android.media.FaceDetector;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.provider.Settings;
-import android.renderscript.ScriptGroup;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.material.tabs.TabLayout;
+import com.mongodb.DBObject;
+import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     //For Contacts Tab
@@ -47,12 +48,19 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private String[] permission_list = { Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE };
 
+    //For FaceBook Login
+    public Context mContext = this;
+    CallbackManager callBackManager;
+    AccessToken accessToken;
+    LoginButton loginButton;
+    boolean isLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermission();
+
         names = new ArrayList<>();
         phoneBooks = new ArrayList<>();
         Cursor c = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
@@ -66,9 +74,6 @@ public class MainActivity extends AppCompatActivity {
             names.add(name);
             phoneBooks.add(pb);
         } while (c.moveToNext());
-
-
-        //Initializing the TabLayout
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Contacts"));
         tabLayout.addTab(tabLayout.newTab().setText("Gallery"));
@@ -96,6 +101,37 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //For Facebook Login
+        callBackManager = CallbackManager.Factory.create();
+//        accessToken = AccessToken.getCurrentAccessToken();
+//        boolean isLogin = (accessToken != null) && !accessToken.isExpired();
+        loginButton = (LoginButton) findViewById(R.id.login_btn);
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
+        LoginManager.getInstance().registerCallback(callBackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                //Initializing the TabLayout
+                loginButton.setVisibility(View.GONE);
+                tabLayout.setVisibility(View.VISIBLE);
+                viewPager.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(mContext, "You've cancelled Facebook Login", Toast.LENGTH_LONG);
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Toast.makeText(mContext, "Facebook Login ERROR", Toast.LENGTH_LONG);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callBackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void checkPermission(){
