@@ -22,12 +22,21 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:visibility="gone"/>
+        android:visibility="gone">
+    </com.google.android.material.tabs.TabLayout>
 
+    <Button
+        android:id="@+id/fblogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/tabLayout"
+        android:text="LogOut"
+        android:visibility="gone" />
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/tabLayout"
         android:visibility="gone"/>
+
 </RelativeLayout>

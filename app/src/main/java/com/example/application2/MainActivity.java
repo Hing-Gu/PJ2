@@ -6,10 +6,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.FaceDetector;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -17,6 +21,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -33,6 +44,16 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,13 +75,16 @@ public class MainActivity extends AppCompatActivity {
     AccessToken accessToken;
     LoginButton loginButton;
     boolean isLogin;
+    Button logoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermission();
-
+        //Log.d("test","1234");
+        new JSONTask().execute("http://192.249.19.254:7980/a");
+        request();
         names = new ArrayList<>();
         phoneBooks = new ArrayList<>();
         Cursor c = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
@@ -106,6 +130,13 @@ public class MainActivity extends AppCompatActivity {
 //        accessToken = AccessToken.getCurrentAccessToken();
 //        boolean isLogin = (accessToken != null) && !accessToken.isExpired();
         loginButton = (LoginButton) findViewById(R.id.login_btn);
+        logoutButton = (Button) findViewById(R.id.fblogout);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoginManager.getInstance().logOut();
+            }
+        });
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
         LoginManager.getInstance().registerCallback(callBackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -114,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
                 loginButton.setVisibility(View.GONE);
                 tabLayout.setVisibility(View.VISIBLE);
                 viewPager.setVisibility(View.VISIBLE);
+                logoutButton.setVisibility(View.VISIBLE);
+                isLogin = true;
             }
 
             @Override
@@ -164,6 +197,98 @@ public class MainActivity extends AppCompatActivity {
                     this.finish();
                 }
             }
+        }
+    }
+    EditText editTextID;
+    EditText editTextTW;
+    public void request(){
+        final JSONObject testjson = new JSONObject();
+        Log.d("test","1234");
+        String url = "http://192.249.19.254:7980/a";
+        new JSONTask().execute("http://192.249.19.254:7980/b");
+//        try {
+//            testjson.put("id", "asdfasdf");
+//            testjson.put("password", "adfafasd");
+//            String jsonString = testjson.toString();
+//            Log.d("test","2222");
+//            //이제 전송해볼까요?
+//            final RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+//            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, testjson, new Response.Listener<JSONObject>() {
+//                //데이터 전달을 끝내고 이제 그 응답을 받을 차례입니다.
+//                @Override
+//                public void onResponse(JSONObject response) {
+//                    try {
+//                        System.out.println("데이터전송 성공");
+//                        Log.d("test","3333");
+//                       //받은 json형식의 응답을 받아
+//                        JSONObject jsonObject = new JSONObject(response.toString());
+//                    }
+//                    catch (Exception e) {
+//                        Log.d("test","fuck you");
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }, new Response.ErrorListener() {
+//               @Override
+//               public void onErrorResponse(VolleyError error) {
+//                   error.printStackTrace();
+//               }
+//            });
+//            Log.d("test","4444");
+//            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//            requestQueue.add(jsonObjectRequest);
+//            Log.d("test","5555");
+//        }
+//        catch (JSONException e){
+//            e.printStackTrace();
+//        }
+    }
+
+    public class JSONTask extends AsyncTask<String, String, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.accumulate("user_id", "androidTest");
+                jsonObject.accumulate("name", "yun");
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+                try {
+                    URL url = new URL(urls[0]);
+                    con = (HttpURLConnection) url.openConnection();
+                    con.connect();
+                    InputStream stream = con.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(stream));
+                    StringBuffer buffer = new StringBuffer();
+                    String line = "";
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line);
+                    }
+                    return buffer.toString();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (con != null) {
+                        con.disconnect();
+                    }
+                    try {
+                        if (reader != null) {
+                            reader.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            System.out.println(result);
         }
     }
 }
