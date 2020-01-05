@@ -1,42 +1,46 @@
 package com.example.application2;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.ContentProviderOperation;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Point;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
-import android.util.SparseBooleanArray;
-import android.view.Display;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.mongodb.client.MongoClient;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,9 +60,10 @@ public class Fragment1 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fragment1, null);
         checkPermission();
+        request();
+//        new JSONTask().execute("http://192.249.19.254:7980/tels"); //수정
 
         adapter = new ListViewAdapter(getActivity(), R.layout.listview_btn_item, REF_MENU);
-
         final ListView listview = (ListView) view.findViewById(R.id.listview1);
         ImageButton add_button = (ImageButton) view.findViewById(R.id.add_btn);
         add_button.setOnClickListener(new View.OnClickListener() {
@@ -162,5 +167,41 @@ public class Fragment1 extends Fragment {
                 requestPermissions(permission_list, 0);
             }
         }
+   }
+
+    public void request(){
+        String url = "http://192.249.19.254:7980/tels";
+        JSONObject testjson = new JSONObject();
+        try{
+            testjson.put("name","kim su yeong");
+            testjson.put("tel","01086921128");
+            final String jsonString = testjson.toString();
+            Log.d("body",jsonString);
+
+            final  RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, testjson, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        Log.d("test","데이터전송성공");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }});
+
+            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            Log.d("test","first");
+            requestQueue.add(jsonObjectRequest);
+            Log.d("test", String.valueOf(requestQueue));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 }

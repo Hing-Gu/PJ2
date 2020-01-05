@@ -1,6 +1,7 @@
 package com.example.application2;
 
 import android.Manifest;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -59,6 +60,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static java.sql.DriverManager.println;
+
 public class MainActivity extends AppCompatActivity {
     //For Contacts Tab
     public static List<String> names;
@@ -83,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         checkPermission();
         //Log.d("test","1234");
-        new JSONTask().execute("http://192.249.19.254:7980/a");
-        request();
+//        new JSONTask().execute("http://192.249.19.254:7980/a");
+//         request();
         names = new ArrayList<>();
         phoneBooks = new ArrayList<>();
         Cursor c = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
@@ -199,96 +202,44 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    EditText editTextID;
-    EditText editTextTW;
-    public void request(){
-        final JSONObject testjson = new JSONObject();
-        Log.d("test","1234");
-        String url = "http://192.249.19.254:7980/a";
-        new JSONTask().execute("http://192.249.19.254:7980/b");
-//        try {
-//            testjson.put("id", "asdfasdf");
-//            testjson.put("password", "adfafasd");
-//            String jsonString = testjson.toString();
-//            Log.d("test","2222");
-//            //이제 전송해볼까요?
-//            final RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
-//            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, testjson, new Response.Listener<JSONObject>() {
-//                //데이터 전달을 끝내고 이제 그 응답을 받을 차례입니다.
+//    public void request(){
+//        String url = "http://192.249.19.254:7980/tels";
+//        JSONObject testjson = new JSONObject();
+//                try{
+//            testjson.put("name","kim su yeong");
+//            testjson.put("tel","01086921128");
+//            final String jsonString = testjson.toString();
+//            Log.d("body",jsonString);
+//
+//            final  RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+//            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, testjson, new Response.Listener<JSONObject>() {
 //                @Override
 //                public void onResponse(JSONObject response) {
 //                    try {
-//                        System.out.println("데이터전송 성공");
-//                        Log.d("test","3333");
-//                       //받은 json형식의 응답을 받아
-//                        JSONObject jsonObject = new JSONObject(response.toString());
-//                    }
-//                    catch (Exception e) {
-//                        Log.d("test","fuck you");
+//                        Log.d("test","데이터전송성공");
+//                    } catch (Exception e) {
 //                        e.printStackTrace();
 //                    }
 //                }
 //            }, new Response.ErrorListener() {
-//               @Override
-//               public void onErrorResponse(VolleyError error) {
-//                   error.printStackTrace();
-//               }
-//            });
-//            Log.d("test","4444");
-//            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    error.printStackTrace();
+//                }});
+//
+//            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//            Log.d("test","first");
 //            requestQueue.add(jsonObjectRequest);
-//            Log.d("test","5555");
-//        }
-//        catch (JSONException e){
+//            Log.d("test", String.valueOf(requestQueue));
+//
+//        } catch (JSONException e) {
 //            e.printStackTrace();
 //        }
-    }
+//
+//    }
+//
+//
+//
 
-    public class JSONTask extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.accumulate("user_id", "androidTest");
-                jsonObject.accumulate("name", "yun");
-                HttpURLConnection con = null;
-                BufferedReader reader = null;
-                try {
-                    URL url = new URL(urls[0]);
-                    con = (HttpURLConnection) url.openConnection();
-                    con.connect();
-                    InputStream stream = con.getInputStream();
-                    reader = new BufferedReader(new InputStreamReader(stream));
-                    StringBuffer buffer = new StringBuffer();
-                    String line = "";
-                    while ((line = reader.readLine()) != null) {
-                        buffer.append(line);
-                    }
-                    return buffer.toString();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (con != null) {
-                        con.disconnect();
-                    }
-                    try {
-                        if (reader != null) {
-                            reader.close();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            System.out.println(result);
-        }
-    }
+
 }
