@@ -44,9 +44,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.application2.MainActivity.phoneBooks;
+
 public class Fragment1 extends Fragment {
     final List<String> LIST_MENU = MainActivity.names;
-    List<PhoneBook> REF_MENU = MainActivity.phoneBooks;
+    List<PhoneBook> REF_MENU = phoneBooks;
     ListViewAdapter adapter;
     String[] permission_list = { Manifest.permission.WRITE_CONTACTS };
 
@@ -60,8 +62,11 @@ public class Fragment1 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fragment1, null);
         checkPermission();
-        request();
-//        new JSONTask().execute("http://192.249.19.254:7980/tels"); //수정
+        for(int i=0; i<REF_MENU.size();i++){
+            request(String.valueOf( REF_MENU.get(i).getName()),String.valueOf(REF_MENU.get(i).getTel()));
+            Log.d("ref", String.valueOf(REF_MENU.get(i).getName())+","+ String.valueOf(REF_MENU.get(i).getTel()));
+        }
+
 
         adapter = new ListViewAdapter(getActivity(), R.layout.listview_btn_item, REF_MENU);
         final ListView listview = (ListView) view.findViewById(R.id.listview1);
@@ -91,6 +96,8 @@ public class Fragment1 extends Fragment {
                         // Text 값 받아서 로그 남기기
                         String full_name = name.getText().toString();
                         String phone_number = phone_num.getText().toString();
+
+                        request(name.getText().toString(),phone_num.getText().toString());
                         add_phone.setName(full_name);
                         add_phone.setTel(phone_number);
 
@@ -169,12 +176,12 @@ public class Fragment1 extends Fragment {
         }
    }
 
-    public void request(){
+    public void request(String name, String tel){
         String url = "http://192.249.19.254:7980/tels";
         JSONObject testjson = new JSONObject();
         try{
-            testjson.put("name","kim su yeong");
-            testjson.put("tel","01086921128");
+            testjson.put("name",name);
+            testjson.put("tel",tel);
             final String jsonString = testjson.toString();
             Log.d("body",jsonString);
 
@@ -182,26 +189,27 @@ public class Fragment1 extends Fragment {
             final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, testjson, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    try {
-                        Log.d("test","데이터전송성공");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }});
+            try {
+                Log.d("test","데이터전송성공");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }, new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            error.printStackTrace();
+        }});
 
             jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             Log.d("test","first");
             requestQueue.add(jsonObjectRequest);
             Log.d("test", String.valueOf(requestQueue));
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+} catch (JSONException e) {
+        e.printStackTrace();
         }
 
     }
+
 }
