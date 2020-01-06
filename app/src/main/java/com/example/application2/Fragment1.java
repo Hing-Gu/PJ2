@@ -28,22 +28,17 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.android.volley.Request.*;
+import static com.android.volley.Request.Method.*;
 import static com.example.application2.MainActivity.phoneBooks;
 
 public class Fragment1 extends Fragment {
@@ -66,11 +61,10 @@ public class Fragment1 extends Fragment {
             request(String.valueOf( REF_MENU.get(i).getName()),String.valueOf(REF_MENU.get(i).getTel()));
             Log.d("ref", String.valueOf(REF_MENU.get(i).getName())+","+ String.valueOf(REF_MENU.get(i).getTel()));
         }
-
-
         adapter = new ListViewAdapter(getActivity(), R.layout.listview_btn_item, REF_MENU);
         final ListView listview = (ListView) view.findViewById(R.id.listview1);
         ImageButton add_button = (ImageButton) view.findViewById(R.id.add_btn);
+//        final Button dbbtn = view.findViewById(R.id.getTel);
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +82,13 @@ public class Fragment1 extends Fragment {
                 name.setHint("이름을 입력하세요");
                 phone_num.setHint("번호를 입력하세요");
                 final AlertDialog dialog = ad.create();
+//                dbbtn.setOnClickListener(new View.OnClickListener(){
+//
+//                    @Override
+//                    public void onClick(View v) {
+////                        get();
+//                    }
+//                });
                 submit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -186,7 +187,7 @@ public class Fragment1 extends Fragment {
             Log.d("body",jsonString);
 
             final  RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, testjson, new Response.Listener<JSONObject>() {
+            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(POST, url, testjson, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
             try {
@@ -209,7 +210,7 @@ public class Fragment1 extends Fragment {
 } catch (JSONException e) {
         e.printStackTrace();
         }
-
     }
 
 }
+

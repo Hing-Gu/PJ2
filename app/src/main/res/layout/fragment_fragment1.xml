@@ -25,5 +25,10 @@
         android:layout_alignParentRight="true"
         android:layout_margin="5sp"
         />
-
+<!--    <Button-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/getTel"-->
+<!--        android:text="get Tel from DB"-->
+<!--        />-->
 </RelativeLayout>
