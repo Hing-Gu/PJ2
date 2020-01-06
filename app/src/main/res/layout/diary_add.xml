@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:paddingTop="16dp" >
+    android:paddingTop="16dp"
+    android:background="@drawable/background"
+    >
+<!--    <ImageView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:src="@drawable/background"-->
+<!--        />-->
+
     <EditText
         android:id="@+id/edittext_day"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
+        android:layout_width="185dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="40dp"
         android:layout_marginBottom="10dp"
-        />
+        android:layout_marginLeft="70dp"
+        android:background="@null"
+        android:gravity="center"
+        android:ems="5" />
 
     <EditText
         android:id="@+id/edittext_text"
@@ -20,13 +33,20 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/edittext_day"
         android:layout_marginBottom="10dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="15dp"
+        android:background="@null"
         android:ems="10" />
 
     <Button
         android:id="@+id/buttonSubmit2"
         android:layout_width="100dp"
+        android:layout_marginTop="320dp"
+        android:background="@null"
         android:layout_height="wrap_content"
         android:layout_below="@+id/edittext_text"
         android:layout_marginBottom="20dp"
-        android:text="Sign In" />
+        android:text="Save" />
+
+
 </RelativeLayout>

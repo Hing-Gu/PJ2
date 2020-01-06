@@ -66,77 +66,13 @@ public class Fragment3 extends Fragment {
 
 //        View v = inflater.inflate(R.layout.fragment_fragment3, container, false);
         add_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder ad = new AlertDialog.Builder(getActivity());
-                LayoutInflater inflater = getLayoutInflater();
-                View view = inflater.inflate(R.layout.diary_add, null);
-                ad.setView(view);
-                ad.setTitle("연락처 추가");       // 제목 설정
-                ad.setMessage("이름과 전화번호를 입력해주세요");   // 내용 설정
-                // EditText 삽입하기
+                                          @Override
+                                          public void onClick(View v) {
+                                              Intent intent = new Intent(getActivity(), DiaryAddActivity.class);
+                                              startActivity(intent);
 
-                final Button submit =  view.findViewById(R.id.buttonSubmit2);
-                final EditText day =  view.findViewById(R.id.edittext_day);
-                final EditText text =  view.findViewById(R.id.edittext_text);
-                day.setHint("날짜를 입력하세요");
-                text.setHint("내용을 입력하세요");
-                final AlertDialog dialog = ad.create();
-
-                submit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Text 값 받아서 로그 남기기
-                        String full_name =  day.getText().toString();
-                        String phone_number = text.getText().toString();
-
-                        request(full_name,phone_number);
-                        dialog.dismiss();     //닫기
-                    }
-
-                });
-                ad.setNegativeButton("취소하기", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();     //닫기
-                    }
-                });
-                dialog.show();
-            }
-        });
+                                          }
+                                      });
         return view;
-//        return v;
-    }
-    public void request(String day, String text){
-        String url = "http://192.249.19.254:7980/diary";
-        JSONObject testjson = new JSONObject();
-        try{
-            testjson.put("day",day);
-            testjson.put("text",text);
-            final String jsonString = testjson.toString();
-            Log.d("body",jsonString);
-
-            final RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(POST, url, testjson, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        Log.d("test","데이터전송성공");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }});
-
-            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            requestQueue.add(jsonObjectRequest);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 }

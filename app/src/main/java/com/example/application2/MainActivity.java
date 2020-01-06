@@ -202,44 +202,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-//    public void request(){
-//        String url = "http://192.249.19.254:7980/tels";
-//        JSONObject testjson = new JSONObject();
-//                try{
-//            testjson.put("name","kim su yeong");
-//            testjson.put("tel","01086921128");
-//            final String jsonString = testjson.toString();
-//            Log.d("body",jsonString);
-//
-//            final  RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
-//            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, testjson, new Response.Listener<JSONObject>() {
-//                @Override
-//                public void onResponse(JSONObject response) {
-//                    try {
-//                        Log.d("test","데이터전송성공");
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    error.printStackTrace();
-//                }});
-//
-//            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//            Log.d("test","first");
-//            requestQueue.add(jsonObjectRequest);
-//            Log.d("test", String.valueOf(requestQueue));
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
-//
-//
 
 
 }
