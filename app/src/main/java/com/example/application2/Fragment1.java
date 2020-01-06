@@ -60,7 +60,7 @@ public class Fragment1 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fragment1, null);
         checkPermission();
-        request();
+        //request();
 //        new JSONTask().execute("http://192.249.19.254:7980/tels"); //수정
 
         adapter = new ListViewAdapter(getActivity(), R.layout.listview_btn_item, REF_MENU);

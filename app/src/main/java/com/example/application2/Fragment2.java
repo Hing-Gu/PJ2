@@ -72,6 +72,14 @@ public class Fragment2 extends Fragment {
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICTURE_REQUEST_CODE);
             }
         });
+
+        Button button2 = (Button) v.findViewById(R.id.refreshbtn);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.download("http://192.249.19.254:7980/imagedown");
+            }
+        });
         recyclerView.setAdapter(adapter);
 
         return v;

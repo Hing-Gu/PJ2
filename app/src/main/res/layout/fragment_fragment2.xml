@@ -32,5 +32,17 @@
         android:layout_margin="5sp"
         />
 
+    <Button
+        android:id="@+id/refreshbtn"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/refresh"
+        android:textSize="20sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="5sp"
+        />
+
 </RelativeLayout>
 

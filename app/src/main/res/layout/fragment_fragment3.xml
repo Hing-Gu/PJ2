@@ -19,4 +19,14 @@
         android:padding="5sp"
         android:layout_centerHorizontal="true">
     </TextView>
+    <ImageButton
+        android:id="@+id/add_btn2"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/add"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5sp"
+        />
 </RelativeLayout>
