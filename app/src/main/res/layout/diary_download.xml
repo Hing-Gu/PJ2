@@ -16,8 +16,8 @@
     <!--        android:src="@drawable/background"-->
     <!--        />-->
 
-    <EditText
-        android:id="@+id/edittext_day"
+    <TextView
+        android:id="@+id/diaryday"
         android:layout_width="185dp"
         android:layout_height="45dp"
         android:layout_marginTop="40dp"
@@ -25,29 +25,31 @@
         android:layout_marginLeft="70dp"
         android:background="@null"
         android:gravity="center"
-        android:ems="5" />
+        android:ems="5"
+        android:textSize="18sp"/>
 
-    <EditText
-        android:id="@+id/edittext_text"
+    <TextView
+        android:id="@+id/diarytext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/edittext_day"
+        android:layout_below="@+id/diaryday"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="50dp"
         android:layout_marginLeft="15dp"
         android:background="@null"
         android:lineSpacingExtra="23dp"
-        android:ems="10" />
+        android:ems="10"
+        android:textSize="18sp"/>
 
-    <Button
-        android:id="@+id/buttonSubmit2"
-        android:layout_width="100dp"
-        android:layout_marginTop="320dp"
-        android:background="@null"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentBottom="true"
-        android:text="Save" />
+<!--    <Button-->
+<!--        android:id="@+id/buttonSubmit2"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_marginTop="320dp"-->
+<!--        android:background="@null"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="20dp"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:text="Save" />-->
 
 
 </RelativeLayout>

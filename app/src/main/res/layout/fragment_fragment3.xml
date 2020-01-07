@@ -6,19 +6,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="Application1"
     tools:context="com.example.application2.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_main"
+    android:background="@drawable/background2">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Press button to Start"
-        android:background="#535353"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        android:textColor="#ffffff"
-        android:padding="5sp"
-        android:layout_centerHorizontal="true">
-    </TextView>
+    <ListView
+        android:id="@+id/listview3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:choiceMode="multipleChoice"
+        android:layout_above="@+id/add_btn2"
+        android:dividerHeight="0px"/>
+    <Button
+        android:id="@+id/download1"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/download"
+        android:textSize="20sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="5sp"
+        />
+
     <ImageButton
         android:id="@+id/add_btn2"
         android:layout_width="50sp"

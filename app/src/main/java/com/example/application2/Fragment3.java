@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -24,11 +25,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.MongoClientSettings;
@@ -42,16 +47,21 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 
 import org.bson.Document;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.android.volley.Request.Method.POST;
 
 public class Fragment3 extends Fragment {
+    List<Diary> DIARY;
+    DiaryAdapter adapter;
+    private List<Map<String, Object>> tmp;
     public Fragment3(){
     }
 
@@ -61,6 +71,18 @@ public class Fragment3 extends Fragment {
         View v = inflater.inflate(R.layout.fragment_fragment3, null);
         Point point = new Point();
         display.getSize(point);
+        DIARY = new ArrayList<Diary>();
+        final ListView listview = (ListView) v.findViewById(R.id.listview3);
+        adapter = new DiaryAdapter(getActivity(), R.layout.diaryview, DIARY);
+        Button down_button = v.findViewById(R.id.download1);
+        down_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                download("http://192.249.19.254:7980/diary");
+                adapter.diarys = DIARY;
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         ImageButton add_button = v.findViewById(R.id.add_btn2);
 
@@ -70,87 +92,50 @@ public class Fragment3 extends Fragment {
                 Intent intent = new Intent(getActivity(), DiaryAddActivity.class);
                 startActivity(intent);
             }
-
-//                AlertDialog.Builder ad = new AlertDialog.Builder(getActivity());
-//                LayoutInflater inflater = getLayoutInflater();
-//                View view = inflater.inflate(R.layout.diary_add, null);
-//                ad.setView(view);
-//                ad.setTitle("연락처 추가");       // 제목 설정
-//                ad.setMessage("이름과 전화번호를 입력해주세요");   // 내용 설정
-//                // EditText 삽입하기
-//
-//                final Button submit =  view.findViewById(R.id.buttonSubmit2);
-//                final EditText day =  view.findViewById(R.id.edittext_day);
-//                final EditText text =  view.findViewById(R.id.edittext_text);
-//                day.setHint("날짜를 입력하세요");
-//                text.setHint("내용을 입력하세요");
-//                final AlertDialog dialog = ad.create();
-//
-//                submit.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        // Text 값 받아서 로그 남기기
-//                        String full_name =  day.getText().toString();
-//                        String phone_number = text.getText().toString();
-//
-//                        request(full_name,phone_number);
-//                        dialog.dismiss();     //닫기
-//                    }
-//
-//                });
-//                ad.setNegativeButton("취소하기", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();     //닫기
-//                    }
-//                });
-//                dialog.show();
-//            }
         });
-//        Mongo_IP = "192.249.19.254";
-//        Mongo_Port = 7980;
-//        DB_Name = "testDB";
-//        mongoClient = MongoClients.create();//(MongoAdress(Mongo_IP, Mongo_Port));
-//
-//        MongoIterable<String> databases = mongoClient.listDatabaseNames();
-//        System.out.println("=======Database List=======");
-//        int num=1;
-//        for (String dbName: databases) {
-//            System.out.println(dbName);
-//        }
+
+        listview.setAdapter(adapter);
+        listview.setOnItemClickListener(adapter.mItemClickListener);
         return v;
     }
 
-    public void request(String day, String text){
-        String url = "http://192.249.19.254:7980/diary";
-        JSONObject testjson = new JSONObject();
-        try{
-            testjson.put("day",day);
-            testjson.put("text",text);
-            final String jsonString = testjson.toString();
-            Log.d("body",jsonString);
-
-            final RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(POST, url, testjson, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        Log.d("test","데이터전송성공");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+    public void download(String url) {
+        final RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        final JsonArrayRequest arrayRequest = new JsonArrayRequest(Request.Method.GET,
+                url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    Gson gson = new Gson();
+                    tmp = gson.fromJson(String.valueOf(response), new TypeToken<List<Map<String, Object>>>() {
+                    }.getType());
+                    DIARY = jsontoList(tmp);
+                    adapter.diarys = DIARY;
+                    adapter.notifyDataSetChanged();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }});
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        arrayRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue.add(arrayRequest);
+    }
 
-            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            requestQueue.add(jsonObjectRequest);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public List<Diary> jsontoList(List<Map<String, Object>> ori_list) {
+        List<Diary> ret = new ArrayList<Diary>();
+        for (int i=0; i<ori_list.size(); i++) {
+            Diary d = new Diary("", "");
+            d.setDay((String) ori_list.get(i).get("day"));
+            d.setText((String) ori_list.get(i).get("text"));
+            Log.d("d day", (String) ori_list.get(i).get("day"));
+            Log.d("d text", (String) (String) ori_list.get(i).get("text"));
+            ret.add(d);
         }
+        return ret;
     }
 }

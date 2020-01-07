@@ -120,4 +120,9 @@ public class ListViewAdapter extends ArrayAdapter {
     public Object getItem(int position) {
         return phoneBooks.get(position);
     }
+
+    @Override
+    public int getCount() {
+        return phoneBooks.size();
+    }
 }

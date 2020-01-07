@@ -20,30 +20,38 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.Holder> {
     private Context context;
     private List<Imagelist> mThumbIds;
+    private List<Map<String, Object>> tmp;
     private int size;
     private int pad;
 
     public RecyclerViewAdapter(Context context, int displayWidth) {
         this.context = context;
         mThumbIds = new ArrayList<Imagelist>();
-        mThumbIds.add(new Imagelist(R.drawable.f1, ""));
-        mThumbIds.add(new Imagelist(R.drawable.f2, ""));
-        mThumbIds.add(new Imagelist(R.drawable.f3, ""));
         mThumbIds.add(new Imagelist(R.drawable.f12, ""));
+        mThumbIds.add(new Imagelist(R.drawable.f13, ""));
+        mThumbIds.add(new Imagelist(R.drawable.f14, ""));
+        mThumbIds.add(new Imagelist(R.drawable.f15, ""));
+        mThumbIds.add(new Imagelist(R.drawable.f16, ""));
+        mThumbIds.add(new Imagelist(R.drawable.f17, ""));
         size = displayWidth/3;
         pad = 8;
     }
@@ -89,7 +97,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public ImageView imageView;
         public Holder(final View view) {
             super(view);
-            download("http://192.249.19.254:7980/imagedown");
             imageView = (ImageView) view.findViewById(R.id.imageviewrecycle);
             int pos = getAdapterPosition();
             imageView.setOnCreateContextMenuListener(this);
@@ -175,7 +182,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         });
                         Log.d("jsonobjectreq", "OK");
 
-                        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                         Log.d("reqset", "OK");
                         requestQueue.add(jsonObjectRequest);
                         Log.d("reqQadd", "OK");
@@ -189,12 +196,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
     public void download(String url) {
         final RequestQueue requestQueue = Volley.newRequestQueue(context);
-        final StringRequest stringRequest = new StringRequest(Request.Method.GET,
-                url, new Response.Listener<String>() {
+        final JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET,
+                url, null, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(String response) {
+            public void onResponse(JSONArray response) {
                 try {
-                    Log.d("test", response);
+                    Gson gson = new Gson();
+                    tmp = gson.fromJson(String.valueOf(response), new TypeToken<List<Map<String, Object>>>() {}.getType());
+                    mThumbIds = jsontoList(tmp);
+                    notifyDataSetChanged();
+                    Log.d("test", String.valueOf(response));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -205,12 +216,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 error.printStackTrace();
             }
         });
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         Log.d("reqset", "OK");
         requestQueue.add(stringRequest);
         Log.d("reqQadd", "OK");
     }
     public void addList(String o) {
         mThumbIds.add(new Imagelist(0, o));
+    }
+    public List<Imagelist> jsontoList(List<Map<String, Object>> ori_list) {
+        List<Imagelist> ret = new ArrayList<Imagelist>();
+        for (int i=0; i<ori_list.size(); i++) {
+            Imagelist imglist = new Imagelist(0, "");
+            imglist.imageId = Integer.parseInt((String) ori_list.get(i).get("imageid"));
+            imglist.imageUri = (String) ori_list.get(i).get("imageuri");
+            Log.d("imglist id", String.valueOf(Integer.parseInt((String) ori_list.get(i).get("imageid"))));
+            Log.d("imglist uri", (String) ori_list.get(i).get("imageuri"));
+            ret.add(imglist);
+        }
+        return ret;
     }
 }

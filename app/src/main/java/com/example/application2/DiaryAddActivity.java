@@ -1,5 +1,7 @@
 package com.example.application2;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -34,17 +37,25 @@ public class DiaryAddActivity extends FragmentActivity {
         submit = findViewById(R.id.buttonSubmit2);
         day = findViewById(R.id.edittext_day);
         text = findViewById(R.id.edittext_text);
-        day.setHint("날짜를 입력하세요");
+        day.setHint("날짜 입력(예:200106)");
         text.setHint("내용을 입력하세요");
-
+        submit=findViewById(R.id.buttonSubmit2);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("asdf", "aasdf");
+                // Text 값 받아서 로그 남기기
+                String full_name =  day.getText().toString();
+                String phone_number = text.getText().toString();
+
+                request(full_name,phone_number);
+                Toast.makeText(getApplicationContext(),"저장 완료",Toast.LENGTH_SHORT).show();
+                finishAndRemoveTask();
+
             }
+
         });
 
-        request(day.getText().toString(), text.getText().toString());
+
     }
 
     public void request(String day, String text){
@@ -72,7 +83,7 @@ public class DiaryAddActivity extends FragmentActivity {
                     error.printStackTrace();
                 }});
 
-            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             requestQueue.add(jsonObjectRequest);
 
         } catch (JSONException e) {

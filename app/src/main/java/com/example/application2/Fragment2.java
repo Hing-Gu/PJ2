@@ -78,6 +78,7 @@ public class Fragment2 extends Fragment {
             @Override
             public void onClick(View v) {
                 adapter.download("http://192.249.19.254:7980/imagedown");
+                //adapter.getdocumentcnt("http://192.249.19.254:7980/imagecnt");
             }
         });
         recyclerView.setAdapter(adapter);
