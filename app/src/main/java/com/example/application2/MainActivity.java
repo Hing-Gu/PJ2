@@ -130,16 +130,27 @@ public class MainActivity extends AppCompatActivity {
         });
         //For Facebook Login
         callBackManager = CallbackManager.Factory.create();
-//        accessToken = AccessToken.getCurrentAccessToken();
-//        boolean isLogin = (accessToken != null) && !accessToken.isExpired();
+        accessToken = AccessToken.getCurrentAccessToken();
+        isLogin = (accessToken != null) && !accessToken.isExpired();
         loginButton = (LoginButton) findViewById(R.id.login_btn);
+
         logoutButton = (Button) findViewById(R.id.fblogout);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LoginManager.getInstance().logOut();
+                loginButton.setVisibility(View.VISIBLE);
+                tabLayout.setVisibility(View.GONE);
+                viewPager.setVisibility(View.GONE);
+                logoutButton.setVisibility(View.GONE);
             }
         });
+        if (isLogin) {
+            loginButton.setVisibility(View.GONE);
+            tabLayout.setVisibility(View.VISIBLE);
+            viewPager.setVisibility(View.VISIBLE);
+            logoutButton.setVisibility(View.VISIBLE);
+        }
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
         LoginManager.getInstance().registerCallback(callBackManager, new FacebookCallback<LoginResult>() {
             @Override
