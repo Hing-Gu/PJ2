@@ -33,6 +33,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mongodb.DBObject;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCursor;
+
+import org.w3c.dom.Document;
+
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -70,6 +76,14 @@ public class Fragment2 extends Fragment {
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICTURE_REQUEST_CODE);
+            }
+        });
+
+        Button button2 = (Button) v.findViewById(R.id.refreshbtn);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.download("http://192.249.19.254:7980/imagedown");
             }
         });
         recyclerView.setAdapter(adapter);

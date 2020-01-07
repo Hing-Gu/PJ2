@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,6 +14,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +89,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public ImageView imageView;
         public Holder(final View view) {
             super(view);
+            //download("http://192.249.19.254:7980/imagedown");
             imageView = (ImageView) view.findViewById(R.id.imageviewrecycle);
             int pos = getAdapterPosition();
             imageView.setOnCreateContextMenuListener(this);
@@ -112,6 +127,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             MenuItem Delete = menu.add(Menu.NONE, 1001, 1, "Delete");
             Delete.setOnMenuItemClickListener(onEditMenu);
+            MenuItem Upload = menu.add(Menu.NONE, 1002, 2, "Upload");
+            Upload.setOnMenuItemClickListener(onUploadMenu);
         }
 
         private final MenuItem.OnMenuItemClickListener onEditMenu = new MenuItem.OnMenuItemClickListener() {
@@ -126,6 +143,72 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 return true;
             }
         };
+        private final MenuItem.OnMenuItemClickListener onUploadMenu = new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == 1002) {
+                    String url = "http://192.249.19.254:7980/imageup";
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("imageid", Integer.toString(mThumbIds.get(getAdapterPosition()).imageId));
+                        jsonObject.put("imageuri", mThumbIds.get(getAdapterPosition()).imageUri);
+                        final String jsonString = jsonObject.toString();
+                        Log.d("json", jsonString);
+
+                        final RequestQueue requestQueue = Volley.newRequestQueue(context);
+                        Log.d("requestqueue", "OK");
+                        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        try {
+                                            Log.d("test", "이미지 데이터 성공");
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                error.printStackTrace();
+                            }
+                        });
+                        Log.d("jsonobjectreq", "OK");
+
+                        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                        Log.d("reqset", "OK");
+                        requestQueue.add(jsonObjectRequest);
+                        Log.d("reqQadd", "OK");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return true;
+            }
+        };
+    }
+    public void download(String url) {
+        final RequestQueue requestQueue = Volley.newRequestQueue(context);
+        final StringRequest stringRequest = new StringRequest(Request.Method.GET,
+                url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    Log.d("test", response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+//        stringRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        Log.d("reqset", "OK");
+        requestQueue.add(stringRequest);
+        Log.d("reqQadd", "OK");
     }
     public void addList(String o) {
         mThumbIds.add(new Imagelist(0, o));
